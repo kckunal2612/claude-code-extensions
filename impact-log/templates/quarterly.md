@@ -1,13 +1,21 @@
 # Quarterly Impact Log
 
+## Executive Summary
+
+Write a short quarter-level summary that names the most important themes and outcomes. Keep it suitable as raw material for a performance review or leadership update.
+
 ## Themes
-(3-5 recurring themes across the quarter's weekly reports — the story, not the log)
 
-## Notable deliverables
-(shipped features, fixes, or docs worth naming individually; link PRs where evidenced)
+Identify 3-5 recurring themes across the weekly reports. For each theme, explain the pattern of work and cite the strongest supporting evidence.
 
-## Suggested self-review phrasing
-(1-2 sentences per theme, written in first person, suitable for pasting into a performance-review form)
+## Notable Deliverables
 
-## Gaps
-(weeks with little or no captured evidence — worth a manual pass before finalizing)
+List shipped features, fixes, docs, infrastructure improvements, or decisions worth naming individually. Link PRs when links are available in the source material.
+
+## Review-Ready Phrasing
+
+Draft 1-2 first-person sentences per theme that the developer could adapt into a self-review. Keep claims specific, evidenced, and appropriately scoped.
+
+## Gaps And Follow-Ups
+
+Call out weeks with little or no captured evidence, ambiguous work that needs manual context, and any places where the report should be reviewed before sharing.

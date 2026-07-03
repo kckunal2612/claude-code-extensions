@@ -1,10 +1,17 @@
 # Weekly Impact Log
 
 ## Highlights
-(2-4 bullets on the most significant work this week — what shipped, what unblocked someone, what's visible to others)
 
-## By repo
-(group by repo/branch; one line per meaningful commit or merged PR, drawn only from the evidence below)
+Summarize the 2-4 most important outcomes from this week. Focus on shipped work, unblocked collaborators, visible progress, reliability improvements, or decisions that changed direction.
 
-## Needs context
-(anything ambiguous or under-evidenced that a human should annotate before this goes into a review)
+## Evidence By Repo
+
+Group the concrete evidence by repo and branch. Use one concise bullet per meaningful commit, merged PR, or related cluster of work. Include PR links when present in the raw evidence.
+
+## Impact Notes
+
+Explain why the work mattered. Connect evidence to user value, team velocity, operational stability, delivery risk, or future leverage. Keep this grounded in the provided evidence.
+
+## Needs Context
+
+List ambiguous, low-confidence, or under-evidenced items that a human should review before this summary is reused in a 1:1, visibility update, demo, or performance review.
