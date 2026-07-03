@@ -40,9 +40,11 @@ Local-first per the note; the sync step described below is deliberately deferred
 
 `impact-log weekly` and `impact-log quarterly` are bash that gathers raw evidence (breadcrumb-scoped `git log`/`gh pr list` output) and pipes it through `claude -p` with the relevant template ([templates/weekly.md](./templates/weekly.md), [templates/quarterly.md](./templates/quarterly.md)) as the instruction. This reuses Claude Code itself as the synthesis engine instead of writing a bespoke summarizer, and keeps the prompt explicit about not inventing unevidenced work.
 
-## Statusline is opt-in and manual
+## Statusline is opt-in, but self-installing
 
-Claude Code statuslines are configured once, globally, via the user's `settings.json` — a plugin cannot auto-register one, and only one can be active at a time. `impact-log` ships [statusline/impact-log-status.sh](./statusline/impact-log-status.sh) and documents the `settings.json` snippet in the README, but wiring it in is a manual, optional step for users who don't already have a statusline they'd rather keep.
+Claude Code statuslines are configured once, globally, via the user's `settings.json` — a plugin cannot auto-register one, and only one can be active at a time. Rather than asking the user to hand-copy a JSON snippet (the initial approach here), `impact-log statusline enable` patches `settings.json` directly with `jq` — the same "one command wires itself in" pattern [ccstatusline](https://github.com/sirmalloc/ccstatusline) uses (its installer writes the `statusLine` field for you rather than documenting it as a copy-paste step). It stays safe by refusing to overwrite a *different* existing `statusLine` unless `--force` is passed, and `disable` only removes the entry if it matches the path impact-log itself set. This is still opt-in — `init` doesn't call it automatically — but it removes the manual-JSON-editing failure mode entirely for users who do want it.
+
+Unlike ccstatusline, `impact-log` isn't an npm package invoked via `npx` — it's a Claude Code plugin (hooks + a bundled `bin/` CLI), so there's no package registry involved. The self-installer pattern is worth borrowing; the distribution channel is not, since npm/npx would mean maintaining a second install path alongside the plugin marketplace one.
 
 ## Deferred to a later version
 

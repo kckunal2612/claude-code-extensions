@@ -1,0 +1,12 @@
+{
+  "name": "claude-code-extensions",
+  "owner": { "name": "kckunal2612" },
+  "description": "Installable Claude Code extensions.",
+  "plugins": [
+    {
+      "name": "impact-log",
+      "source": "./impact-log",
+      "description": "Ambiently captures work evidence for quarterly reflections, visibility updates, demos, and performance reviews."
+    }
+  ]
+}
