@@ -1,45 +1,34 @@
 # Claude Code Extensions
 
-Claude Code Extensions is a collection of small, practical extensions for making AI-assisted work more useful, repeatable, and shareable.
+Claude Code Extensions is a collection of installable Claude Code extensions for making AI-assisted work more useful, repeatable, and shareable.
 
-The repo is organized like a skills catalog: each extension lives in its own folder, includes a `SKILL.md`, and can carry nearby reference docs, scripts, templates, or examples when the extension needs them.
+The first extension is [Impact Log](./impact-log/README.md), an install-once helper that ambiently captures work evidence for quarterly reflections, visibility updates, demos, and performance reviews.
 
 ## Structure
 
 ```text
 .
-├── .claude-plugin/
-│   └── plugin.json
-├── docs/
-│   └── authoring.md
-├── scripts/
-│   └── list-skills.sh
-└── skills/
-    ├── engineering/
-    ├── productivity/
-    ├── personal/
-    └── in-progress/
+└── impact-log/
+    ├── .claude-plugin/
+    │   └── plugin.json
+    ├── bin/
+    │   └── impact-log
+    ├── hooks/
+    │   └── hooks.json
+    ├── statusline/
+    ├── templates/
+    ├── DESIGN.md
+    └── README.md
 ```
 
-## Skill Categories
+## Extensions
 
-- [Engineering](./skills/engineering/README.md): coding, review, debugging, architecture, delivery, and repo workflows.
-- [Productivity](./skills/productivity/README.md): planning, writing, handoffs, learning, and personal operating systems.
-- [Personal](./skills/personal/README.md): extensions tuned to personal workflows that may still be useful to others.
-- [In Progress](./skills/in-progress/README.md): experiments that are not polished enough to recommend yet.
+- [Impact Log](./impact-log/README.md): ambient work-evidence capture for reviews and reflections. See [DESIGN.md](./impact-log/DESIGN.md) for the implementation decisions behind the V0.
 
-## Conventions
+## Direction
 
-Each extension should use this shape:
-
-```text
-skills/<category>/<extension-name>/
-├── SKILL.md
-└── optional-supporting-files.md
-```
-
-`SKILL.md` is the entry point. Supporting files should sit next to the skill and be referenced from the skill only when they are useful for progressive disclosure.
+This repo is not a broad prompt or skills catalog. Each folder should be a concrete Claude Code extension with a clear install story, a practical workflow, and enough documentation for someone else to try it.
 
 ## Status
 
-This project is just getting started. The current focus is building the repository structure and authoring standards before adding the first real extensions.
+This project is just getting started. The current focus is proving the `impact-log` extension before adding more.
