@@ -1,15 +1,34 @@
 # Claude Code Extensions
 
-This repository is a home for Claude Code extensions that make everyday AI-assisted work more useful, repeatable, and shareable.
+Claude Code Extensions is a collection of installable Claude Code extensions for making AI-assisted work more useful, repeatable, and shareable.
 
-The goal is to collect small, practical extensions that help with both professional and personal workflows, while keeping each extension easy to understand, adapt, and reuse.
+The first extension is [Impact Log](./impact-log/README.md), an install-once helper that ambiently captures work evidence for quarterly reflections, visibility updates, demos, and performance reviews.
 
-## What this project is for
+## Structure
 
-- Building extensions that improve Claude Code workflows
-- Capturing useful patterns from real work and personal projects
-- Sharing reusable tools with others who want to customize their AI coding environment
+```text
+.
+└── impact-log/
+    ├── .claude-plugin/
+    │   └── plugin.json
+    ├── bin/
+    │   └── impact-log
+    ├── hooks/
+    │   └── hooks.json
+    ├── statusline/
+    ├── templates/
+    ├── DESIGN.md
+    └── README.md
+```
+
+## Extensions
+
+- [Impact Log](./impact-log/README.md): ambient work-evidence capture for reviews and reflections. See [DESIGN.md](./impact-log/DESIGN.md) for the implementation decisions behind the V0.
+
+## Direction
+
+This repo is not a broad prompt or skills catalog. Each folder should be a concrete Claude Code extension with a clear install story, a practical workflow, and enough documentation for someone else to try it.
 
 ## Status
 
-This project is just getting started. The first extensions will be added as they are designed, tested, and refined through real use.
+This project is just getting started. The current focus is proving the `impact-log` extension before adding more.
