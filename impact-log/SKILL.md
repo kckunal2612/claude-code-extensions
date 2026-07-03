@@ -15,7 +15,7 @@ Use this skill when the user asks to:
 - Initialize or repair Impact Log's local store.
 - Generate a weekly or quarterly impact report.
 - Find low-confidence entries that need manual context.
-- Enable or disable the Impact Log statusline.
+- Enable, disable, or troubleshoot the Impact Log statusline.
 - Understand or troubleshoot the Impact Log plugin.
 
 ## How To Run It
@@ -38,6 +38,7 @@ If Claude Code runs this skill from another working directory, first locate the 
 ## Notes
 
 - The plugin's hooks capture evidence automatically after install and reload.
+- The SessionStart hook automatically installs the Impact Log statusline when no different statusline is already configured.
 - `impact-log init` is safe to run more than once.
 - `impact-log statusline enable` edits the user's Claude Code `settings.json`; mention this before running it when the user has not explicitly requested statusline setup.
 - Reports are written under `~/.claude/impact-log/reports/` unless `IMPACT_LOG_HOME` is set.
