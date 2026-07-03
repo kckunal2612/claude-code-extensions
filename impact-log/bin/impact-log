@@ -7,6 +7,8 @@ STATE="$IMPACT_LOG_HOME/state.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMPLATES="$PLUGIN_ROOT/templates"
+CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+SETTINGS="$CLAUDE_CONFIG_DIR/settings.json"
 
 usage() {
   cat <<'EOF'
@@ -18,6 +20,8 @@ Usage:
   impact-log weekly [--since D]   Synthesize a weekly report from captured events
   impact-log quarterly            Roll up this quarter's weekly reports
   impact-log needs-context        List low-confidence entries needing manual context
+  impact-log statusline enable [--force]   Wire the statusline into settings.json
+  impact-log statusline disable            Remove it from settings.json (if it's ours)
 EOF
 }
 
@@ -25,10 +29,70 @@ cmd_init() {
   mkdir -p "$IMPACT_LOG_HOME/reports/weekly" "$IMPACT_LOG_HOME/reports/quarterly"
   [ -f "$EVENTS" ] || : > "$EVENTS"
   [ -f "$STATE" ] || echo '{"enabled":true,"event_count":0,"last_event_ts":null}' > "$STATE"
+
+  # Copy the statusline script to a stable, non-plugin location. Plugin install
+  # paths (${CLAUDE_PLUGIN_ROOT}) are ephemeral and change on every update, so
+  # a settings.json statusLine command pointed directly at the plugin dir would
+  # silently break after the next update.
+  cp "$PLUGIN_ROOT/statusline/impact-log-status.sh" "$IMPACT_LOG_HOME/status.sh"
+  chmod +x "$IMPACT_LOG_HOME/status.sh"
+
   echo "impact-log initialized at $IMPACT_LOG_HOME"
   echo
-  echo "Optional — show capture status in your statusline by adding to settings.json:"
-  echo '  "statusLine": { "type": "command", "command": "'"$PLUGIN_ROOT"'/statusline/impact-log-status.sh" }'
+  echo "Optional — show capture status in your statusline:"
+  echo "  impact-log statusline enable"
+  echo
+  echo "(Re-run 'impact-log init' after a plugin update to refresh the statusline copy.)"
+}
+
+cmd_statusline() {
+  local sub="${1:-}" force="false"
+  [ "${2:-}" = "--force" ] && force="true"
+  local status_script="$IMPACT_LOG_HOME/status.sh"
+
+  case "$sub" in
+    enable)
+      if ! command -v jq >/dev/null 2>&1; then
+        echo "impact-log: jq is required to edit settings.json safely." >&2
+        exit 1
+      fi
+      [ -f "$status_script" ] || cmd_init
+      mkdir -p "$CLAUDE_CONFIG_DIR"
+      [ -f "$SETTINGS" ] || echo '{}' > "$SETTINGS"
+
+      local existing
+      existing=$(jq -r '.statusLine.command // empty' "$SETTINGS")
+      if [ -n "$existing" ] && [ "$existing" != "$status_script" ] && [ "$force" != "true" ]; then
+        echo "impact-log: settings.json already has a different statusLine set:" >&2
+        echo "  $existing" >&2
+        echo "Claude Code only supports one active statusline. Re-run with --force to overwrite it, or wire $status_script in yourself." >&2
+        exit 1
+      fi
+
+      jq --arg cmd "$status_script" \
+        '.statusLine = {type: "command", command: $cmd}' \
+        "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
+      echo "impact-log: statusline enabled in $SETTINGS"
+      ;;
+    disable)
+      if ! command -v jq >/dev/null 2>&1 || [ ! -f "$SETTINGS" ]; then
+        echo "impact-log: nothing to do."
+        exit 0
+      fi
+      local existing
+      existing=$(jq -r '.statusLine.command // empty' "$SETTINGS")
+      if [ "$existing" != "$status_script" ]; then
+        echo "impact-log: current statusLine isn't ours, leaving it alone."
+        exit 0
+      fi
+      jq 'del(.statusLine)' "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
+      echo "impact-log: statusline removed from $SETTINGS"
+      ;;
+    *)
+      echo "Usage: impact-log statusline enable [--force] | disable" >&2
+      exit 1
+      ;;
+  esac
 }
 
 cmd_status() {
@@ -141,5 +205,6 @@ case "${1:-}" in
   weekly) shift; cmd_weekly "$@" ;;
   quarterly) cmd_quarterly ;;
   needs-context) cmd_needs_context ;;
+  statusline) shift; cmd_statusline "$@" ;;
   *) usage ;;
 esac
