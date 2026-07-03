@@ -22,7 +22,7 @@ See [DESIGN.md](./DESIGN.md) for the architecture and the reasoning behind it.
 
    This repo ships a [`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json) listing `impact-log`, so the commands above should resolve — but this hasn't been verified end-to-end against a live Claude Code install yet. See [Known gaps](#known-gaps).
 
-   This installs the hooks in [hooks/hooks.json](./hooks/hooks.json) — capture starts automatically from your next session, no further setup required. Nothing needs to be added to `PATH` by hand: Claude Code puts a plugin's `bin/` directory on the Bash tool's `PATH` automatically while the plugin is enabled, so you can just ask Claude Code things like "run impact-log status" or "give me my weekly impact-log report" and it will invoke the CLI directly.
+   This installs the hooks in [hooks/hooks.json](./hooks/hooks.json) — capture starts automatically from your next session, no further setup required. The plugin also ships an `impact-log` skill that tells Claude Code how to run the bundled CLI from the plugin directory.
 
 2. (Optional) Run the one-time setup yourself — ask Claude Code to run `impact-log init`, or run it in a terminal where the plugin's `bin/` is on `PATH`:
 
@@ -42,7 +42,15 @@ See [DESIGN.md](./DESIGN.md) for the architecture and the reasoning behind it.
 
 ## Usage
 
-The simplest way to use this is to just ask Claude Code, in chat, to run any of the commands below — the CLI is on the Bash tool's `PATH` automatically once the plugin is installed:
+The simplest way to use this is to ask Claude Code, in chat, to use Impact Log:
+
+```
+use impact-log to check capture status
+use impact-log to generate my weekly report
+use impact-log to enable the statusline
+```
+
+The underlying CLI commands are:
 
 ```
 impact-log status          # is capture active, how much has it seen
@@ -52,7 +60,7 @@ impact-log quarterly       # roll up this quarter's weekly reports
 impact-log needs-context   # list low-confidence events worth a manual look
 ```
 
-To run these directly from your own shell (outside Claude Code) instead, add the plugin's `bin/` directory to your shell's `PATH` — but note that path lives under `~/.claude/plugins/` and is not stable across plugin updates, so it needs re-adding after updates. Asking Claude Code to run the command avoids that entirely.
+To run these directly from your own shell (outside Claude Code) instead, add the plugin's `bin/` directory to your shell's `PATH` — but note that path lives under `~/.claude/plugins/` and is not stable across plugin updates, so it needs re-adding after updates. Asking Claude Code to use the Impact Log skill avoids that entirely.
 
 Reports land in `~/.claude/impact-log/reports/weekly/` and `.../quarterly/` as Markdown.
 
@@ -62,5 +70,4 @@ Reports land in `~/.claude/impact-log/reports/weekly/` and `.../quarterly/` as M
 
 ## Known gaps
 
-- **`/plugin marketplace add` + `/plugin install` are untested against a live Claude Code install.** The marketplace.json schema and command syntax are correct per the plugin docs, but nobody has actually run these commands against this repo yet — first real attempt may surface something the docs didn't cover.
-- **Direct-shell usage of `bin/impact-log`** (outside asking Claude Code to run it) isn't guaranteed: the plugin's `bin/` is documented as being added to the Bash tool's `PATH`, which is Claude Code's own sandboxed execution context — not necessarily the same `PATH` your interactive shell or the statusline process sees. The statusline path is handled explicitly (a stable copy outside the plugin dir); running the CLI itself from a plain terminal has not been tested.
+- **Direct-shell usage of `bin/impact-log`** outside Claude Code requires locating the installed plugin directory yourself. That path lives under `~/.claude/plugins/` and can change across plugin updates. The statusline path is handled explicitly through a stable copy outside the plugin directory.

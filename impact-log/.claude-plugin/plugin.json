@@ -1,9 +1,10 @@
 {
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "impact-log",
   "displayName": "Impact Log",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Ambiently captures work evidence (repo, branch, tool activity, git/gh history) for quarterly reflections, visibility, and performance reviews. Install once; no slash commands required.",
   "author": { "name": "kckunal2612" },
-  "hooks": "./hooks/hooks.json",
+  "skills": ["./"],
   "defaultEnabled": true
 }
