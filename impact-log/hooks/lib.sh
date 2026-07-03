@@ -4,6 +4,10 @@
 IMPACT_LOG_HOME="${IMPACT_LOG_HOME:-$HOME/.claude/impact-log}"
 IMPACT_LOG_EVENTS="$IMPACT_LOG_HOME/events.jsonl"
 IMPACT_LOG_STATE="$IMPACT_LOG_HOME/state.json"
+CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+CLAUDE_SETTINGS="$CLAUDE_CONFIG_DIR/settings.json"
+IMPACT_LOG_HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IMPACT_LOG_PLUGIN_ROOT="$(cd "$IMPACT_LOG_HOOKS_DIR/.." && pwd)"
 
 impact_log_ready() {
   command -v jq >/dev/null 2>&1
@@ -13,6 +17,27 @@ impact_log_init_home() {
   mkdir -p "$IMPACT_LOG_HOME/reports/weekly" "$IMPACT_LOG_HOME/reports/quarterly"
   [ -f "$IMPACT_LOG_EVENTS" ] || : > "$IMPACT_LOG_EVENTS"
   [ -f "$IMPACT_LOG_STATE" ] || echo '{"enabled":true,"event_count":0,"last_event_ts":null}' > "$IMPACT_LOG_STATE"
+}
+
+impact_log_install_statusline_if_empty() {
+  local status_script="$IMPACT_LOG_HOME/status.sh"
+  impact_log_init_home
+  cp "$IMPACT_LOG_PLUGIN_ROOT/statusline/impact-log-status.sh" "$status_script"
+  chmod +x "$status_script"
+
+  mkdir -p "$CLAUDE_CONFIG_DIR"
+  [ -f "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
+
+  local existing
+  existing=$(jq -r '.statusLine.command // empty' "$CLAUDE_SETTINGS" 2>/dev/null || echo "")
+  if [ -n "$existing" ] && [ "$existing" != "$status_script" ]; then
+    return 0
+  fi
+
+  jq --arg cmd "$status_script" \
+    '.statusLine = {type: "command", command: $cmd}' \
+    "$CLAUDE_SETTINGS" > "$CLAUDE_SETTINGS.tmp" \
+    && mv "$CLAUDE_SETTINGS.tmp" "$CLAUDE_SETTINGS"
 }
 
 git_repo_slug() {

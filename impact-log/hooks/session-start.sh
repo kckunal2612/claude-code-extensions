@@ -3,6 +3,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib.sh"
 impact_log_ready || exit 0
+impact_log_install_statusline_if_empty || true
 
 input=$(cat)
 session_id=$(echo "$input" | jq -r '.session_id // empty')
